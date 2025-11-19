@@ -1,0 +1,56 @@
+name: Update Antigravity Package
+
+on:
+  schedule:
+    # Run daily at 12:00 UTC
+    - cron: '0 12 * * *'
+  workflow_dispatch:  # Allow manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      
+      - name: Install makepkg dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pacman-package-manager
+      
+      - name: Run update script
+        id: update
+        run: |
+          python update_package.py
+          
+          # Check if there are changes
+          if git diff --quiet PKGBUILD; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+            
+            # Extract new version for commit message
+            NEW_VERSION=$(grep '^pkgver=' PKGBUILD | cut -d'=' -f2)
+            echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Commit and push changes
+        if: steps.update.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          git add PKGBUILD .SRCINFO
+          git commit -m "chore: update to version ${{ steps.update.outputs.version }}"
+          git push
