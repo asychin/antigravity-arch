@@ -4,8 +4,8 @@ on:
   schedule:
     # Run daily at 12:00 UTC
     - cron: '0 12 * * *'
-  workflow_dispatch:  # Allow manual trigger
-
+  workflow_dispatch:
+    
 permissions:
   contents: write
 

@@ -1,19 +1,10 @@
 # antigravity-bin - Arch Linux Package
 
-Автоматически обновляемый пакет для установки Google Antigravity на Arch Linux.
+Automatically updated package for installing Google Antigravity on Arch Linux.
 
-## Установка
+## Installation
 
-### Из AUR (рекомендуется)
-
-```bash
-# Используйте ваш любимый AUR helper
-yay -S antigravity-bin
-# или
-paru -S antigravity-bin
-```
-
-### Ручная установка
+### From this repository
 
 ```bash
 git clone https://github.com/asychin/antigravity-arch.git
@@ -21,36 +12,38 @@ cd antigravity-arch
 makepkg -si
 ```
 
-## Обновление
+## Update
 
-Пакет автоматически проверяется на обновления каждый день через GitHub Actions. Когда выходит новая версия Antigravity, PKGBUILD автоматически обновляется.
+The package is automatically checked for updates daily via GitHub Actions. When a new version of Antigravity is released, the PKGBUILD is automatically updated.
 
-Для обновления установленного пакета:
+To update the installed package:
 
 ```bash
-yay -Syu antigravity-bin  # или ваш AUR helper
+cd antigravity-arch
+git pull
+makepkg -si
 ```
 
-## Структура репозитория
+## Repository Structure
 
-- `PKGBUILD` - Скрипт сборки пакета для Arch Linux
-- `.SRCINFO` - Метаданные пакета (генерируется автоматически)
-- `update_package.py` - Скрипт для автоматического обновления версии
-- `.github/workflows/update.yml` - GitHub Actions workflow для автоматических проверок
+- `PKGBUILD` - Arch Linux package build script
+- `.SRCINFO` - Package metadata (generated automatically)
+- `update_package.py` - Script for automatic version updates
+- `.github/workflows/update.yml` - GitHub Actions workflow for automatic checking
 
-## Как это работает
+## How it works
 
-1. GitHub Actions запускается ежедневно или вручную
-2. Скрипт `update_package.py` проверяет страницу загрузки Antigravity
-3. Если обнаружена новая версия:
-   - Загружается файл и вычисляется SHA256
-   - Обновляется `PKGBUILD` с новой версией и контрольной суммой
-   - Генерируется `.SRCINFO`
-   - Изменения коммитятся в репозиторий
+1. GitHub Actions runs daily or manually
+2. The `update_package.py` script checks the Antigravity download page
+3. If a new version is detected:
+   - Downloads the file and calculates SHA256
+   - Updates `PKGBUILD` with new version and checksum
+   - Generates `.SRCINFO`
+   - Commits changes to the repository
 
-## Зависимости
+## Dependencies
 
-Пакет требует следующие зависимости:
+The package requires the following dependencies:
 - gtk3
 - nss
 - alsa-lib
@@ -63,6 +56,6 @@ yay -Syu antigravity-bin  # или ваш AUR helper
 - libdrm
 - mesa
 
-## Лицензия
+## License
 
-Antigravity является проприетарным ПО от Google.
+Antigravity is proprietary software from Google.
