@@ -14,56 +14,70 @@ from pathlib import Path
 
 def fetch_latest_version_from_api():
     """
-    Fetch the latest Antigravity version using an alternative method.
-    Since the webpage is JavaScript-based, we'll try to parse the release URL directly.
+    Fetch the latest Antigravity version using Playwright.
     """
-    # The URL pattern is predictable, but we need to get the current version somehow
-    # Let's try fetching a known recent version and checking for redirects or newer versions
+    print("Fetching latest version information with Playwright...")
     
-    # Alternative: Check the VS Code download URL pattern which Antigravity likely follows
-    # For now, let's hardcode the URL pattern and try to find the latest by checking multiple versions
-    
-    print("Fetching latest version information...")
-    
-    # Try to fetch the download page HTML even though it's JavaScript-based
-    # Sometimes there are meta tags or initial data we can parse
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        print("Error: Playwright not installed. Please install it with: pip install playwright && playwright install chromium", file=sys.stderr)
+        return None, None, None
+
     url = "https://antigravity.google/download/linux"
     
     try:
-        request = urllib.request.Request(url)
-        request.add_header('User-Agent', 'Mozilla/5.0')
-        
-        with urllib.request.urlopen(request) as response:
-            html = response.read().decode('utf-8', errors='ignore')
-        
-        # Try to find version numbers in the HTML/JS
-        # Look for patterns like "1.11.3" or build IDs
-        version_pattern = r'["\']?([\d]+\.[\d]+\.[\d]+)["\']?'
-        buildid_pattern = r'["\']?(\d{16})["\']?'
-        
-        versions = re.findall(version_pattern, html)
-        buildids = re.findall(buildid_pattern, html)
-        
-        if versions and buildids:
-            # Take the first occurrence (likely the latest)
-            version = versions[0]
-            buildid = buildids[0]
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page()
+            page.goto(url)
             
-            # Construct the URL
-            full_url = f"https://edgedl.me.gvt1.com/edgedl/release2/j0qc3/antigravity/stable/{version}-{buildid}/linux-x64/Antigravity.tar.gz"
-            
-            # Verify the URL exists
+            # Wait for page to load (network idle is usually good for SPAs)
             try:
-                urllib.request.urlopen(urllib.request.Request(full_url, method='HEAD'))
-                return version, buildid, full_url
+                page.wait_for_load_state("networkidle", timeout=10000)
             except:
-                pass
-        
-        print("Could not extract version from page, trying manual pattern...", file=sys.stderr)
-        return None, None, None
+                pass # Continue even if timeout, maybe content is already there
+            
+            content = page.content()
+            browser.close()
+            
+            # Look for version patterns in the full HTML content
+            # Pattern for version: 1.11.3
+            version_pattern = r'["\']?(\d+\.\d+\.\d+)["\']?'
+            # Pattern for build ID: 16 digits
+            buildid_pattern = r'["\']?(\d{16})["\']?'
+            
+            versions = re.findall(version_pattern, content)
+            buildids = re.findall(buildid_pattern, content)
+            
+            # Filter versions to look like reasonable semver (e.g. start with 1.)
+            valid_versions = [v for v in versions if v.startswith('1.')]
+            
+            if valid_versions and buildids:
+                # Use the most frequent or first valid version
+                # Heuristic: The version we want usually appears multiple times
+                version = valid_versions[0]
+                buildid = buildids[0]
+                
+                print(f"Found potential version: {version}, buildid: {buildid}")
+                
+                # Construct the URL
+                full_url = f"https://edgedl.me.gvt1.com/edgedl/release2/j0qc3/antigravity/stable/{version}-{buildid}/linux-x64/Antigravity.tar.gz"
+                
+                # Verify the URL exists
+                try:
+                    request = urllib.request.Request(full_url, method='HEAD')
+                    urllib.request.urlopen(request)
+                    return version, buildid, full_url
+                except Exception as e:
+                    print(f"Generated URL check failed: {e}")
+                    pass
+            
+            print("Could not extract version from page content.", file=sys.stderr)
+            return None, None, None
             
     except Exception as e:
-        print(f"Error fetching download page: {e}", file=sys.stderr)
+        print(f"Error using Playwright: {e}", file=sys.stderr)
         return None, None, None
 
 
