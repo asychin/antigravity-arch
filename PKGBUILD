@@ -1,7 +1,7 @@
 # Maintainer: Mufaro <contact@mufaro.dev>
 pkgname=antigravity-bin
-pkgver=1.20.3
-_buildid=6711822635106304
+pkgver=1.20.4
+_buildid=5535391095848960
 pkgrel=4
 pkgdesc="Google Antigravity - Agentic Development Platform (Pre-built Binary)"
 arch=('x86_64')
@@ -10,7 +10,7 @@ license=('Proprietary')
 depends=('gtk3' 'nss' 'alsa-lib' 'libxss' 'libxtst' 'xdg-utils' 'glibc' 'nspr' 'at-spi2-core' 'libdrm' 'mesa')
 options=('!strip')
 source=("https://edgedl.me.gvt1.com/edgedl/release2/j0qc3/antigravity/stable/${pkgver}-${_buildid}/linux-x64/Antigravity.tar.gz")
-sha256sums=('6a4c5ea3bfdef3636d3c050d01444814424f15a3c22d82fc9ca861529e190939')
+sha256sums=('d6d762866a6f43bbdb3ff9e1595d53aa2e896de12be7f35bf57cdaab62b5cd60')
 
 package() {
     install -d "$pkgdir/opt/antigravity"
