@@ -1,6 +1,6 @@
 pkgbase = antigravity-bin
 	pkgdesc = Google Antigravity - Agentic Development Platform (Pre-built Binary)
-	pkgver = 1.20.6
+	pkgver = 1.21.6
 	pkgrel = 4
 	url = https://antigravity.google/
 	arch = x86_64
@@ -17,7 +17,7 @@ pkgbase = antigravity-bin
 	depends = libdrm
 	depends = mesa
 	options = !strip
-	source = https://edgedl.me.gvt1.com/edgedl/release2/j0qc3/antigravity/stable/1.20.6-5891862175809536/linux-x64/Antigravity.tar.gz
-	sha256sums = ad382bf321a6216d07f95af1f613e03f5a07fdf6fc6632b769ce83d81afdd567
+	source = https://edgedl.me.gvt1.com/edgedl/release2/j0qc3/antigravity/stable/1.21.6-5723021441368064/linux-x64/Antigravity.tar.gz
+	sha256sums = 36fb3b270067c9654c0157a8f8b1ccf5986579f7f2f8e367cfb1616515f9eb14
 
 pkgname = antigravity-bin
